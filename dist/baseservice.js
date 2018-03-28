@@ -38,10 +38,10 @@ class Service {
                 limitNr = limit ? parseInt(limit, 10) : 0;
                 logger_1.default.msg(`Getting all ${this.modelName}.`);
                 // // TODO : find a better way to get pagination
-                numberOfEntities = yield this.model.find(Object.assign({}, criteria, { deleted: false })).count();
+                numberOfEntities = yield this.model.find(criteria).count();
             }
             const query = this.model
-                .find(Object.assign({}, criteria, { deleted: false }), undefined, {
+                .find(criteria, undefined, {
                 skip: skipNr,
                 limit: limitNr
             })

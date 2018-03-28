@@ -22,8 +22,8 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
     this.readone = this.routeHandler(service.getById, req => [req.params.id]);
     this.readall = this.routeHandler(service.getAll, req => [
       req.query.criteria ? JSON.parse(req.query.criteria) : null,
-      req.query.skip || '0',
-      req.query.limit || '5',
+      +req.query.skip,
+      +req.query.limit,
       (req.query.pagination || 'true') === 'true',
       req.query.sort || null
     ]);

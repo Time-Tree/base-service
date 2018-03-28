@@ -3,7 +3,7 @@
   "author": {
     "name": "Time Tree"
   },
-  "version": "1.0.7",
+  "version": "1.0.8",
   "dependencies": {
     "express": "^4.16.3",
     "mongoose": "^5.0.11"
@@ -19,6 +19,7 @@
   "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
+    "prepublishOnly": "npm run compile",
     "compile": "npm run clean && tsc -p .",
     "start": "tsc -w -p .",
     "clean": "rimraf dist"

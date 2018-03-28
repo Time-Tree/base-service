@@ -14,7 +14,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     return await newMember.save();
   }
 
-  async getAll(criteria?, skip?: string, limit?: string, pagination?: boolean, sort?: string, toPopulate?: string[]) {
+  async getAll(criteria?, skip: number = 0, limit: number = 50, pagination?: boolean, sort?: string, toPopulate?: string[]) {
     const sortObj = {};
     if (sort) {
       const partsOfSort = sort.split(',');
@@ -23,22 +23,18 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       sortObj[sortField] = sortOrder;
     }
 
-    let skipNr = 0;
-    let limitNr = 0;
     let numberOfEntities = 0;
 
     if (pagination) {
-      skipNr = skip ? parseInt(skip, 10) : 0;
-      limitNr = limit ? parseInt(limit, 10) : 0;
       logger.msg(`Getting all ${this.modelName}.`);
       // // TODO : find a better way to get pagination
-      numberOfEntities = await this.model.find({ ...criteria, deleted: false }).count();
+      numberOfEntities = await this.model.find(criteria).count();
     }
 
     const query = this.model
-      .find({ ...criteria, deleted: false }, undefined, {
-        skip: skipNr,
-        limit: limitNr
+      .find(criteria, undefined, {
+        skip,
+        limit
       })
       .sort(sortObj);
     while (toPopulate && toPopulate.length) {
@@ -53,8 +49,8 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     const entities = await query;
     return pagination
       ? {
-          page_number: Math.floor(skipNr / limitNr) + 1,
-          page_size: limitNr,
+          page_number: Math.floor(skip / limit) + 1,
+          page_size: limit,
           total_record_count: numberOfEntities,
           results: entities
         }
