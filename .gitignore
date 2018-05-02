@@ -6,5 +6,8 @@
 /.vscode
 /.history
 
+#build 
+/dist
+
 # misc
 npm-debug.log
