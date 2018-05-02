@@ -15,6 +15,8 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   }
 
   async getAll(criteria?, skip: number = 0, limit: number = 50, pagination?: boolean, sort?: string, toPopulate?: string[]) {
+    // generating initial criteria
+    criteria = { ...criteria, deleted: false };
     const sortObj = {};
     if (sort) {
       const partsOfSort = sort.split(',');
@@ -27,7 +29,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
     if (pagination) {
       logger.msg(`Getting all ${this.modelName}.`);
-      // // TODO : find a better way to get pagination
+      //TODO : find a better way to get pagination
       numberOfEntities = await this.model.find(criteria).count();
     }
 
