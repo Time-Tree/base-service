@@ -39,7 +39,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       .find(criteria, undefined, {
         skip,
         limit
-      })
+      }).collation({ locale: 'en', caseFirst: 'lower' })
       .sort(sortObj);
     while (toPopulate && toPopulate.length) {
       const x = toPopulate.pop();
