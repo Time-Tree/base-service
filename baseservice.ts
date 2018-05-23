@@ -1,6 +1,29 @@
+import { Model, Document } from 'mongoose';
+import { ObjectID } from 'mongodb';
+
 import errorHandler from './utils/errorHandler';
 import logger from './utils/logger';
-import { Model, Document } from 'mongoose';
+
+export interface IPaginatedResult {
+  results: any[];
+  skip?: number;
+  limit?: number;
+  page_number?: number;
+  total_record_count?: number;
+}
+
+export interface IErrorInfo {
+  code: string | number;
+  message: string;
+}
+
+export const isResult = (result: any): result is IPaginatedResult => {
+  return result.results !== undefined;
+};
+
+export const isError = (error: any): error is IErrorInfo => {
+  return error.code !== undefined;
+};
 
 export default abstract class Service<Doc extends Document, DocModel extends Model<Doc>> {
   modelName: string;
@@ -8,13 +31,23 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     this.modelName = model && model.modelName;
   }
 
-  async create(data): Promise<Doc> {
+  async create(data, user?): Promise<Doc | IErrorInfo> {
+    console.warn(data);
     data.createdOn = new Date().getTime();
     const newMember = new this.model(data);
     return await newMember.save();
   }
 
-  async getAll(criteria?, skip?: number, limit?: number, pagination?: boolean, sort?: string, toPopulate?: string[]) {
+  async getAll(
+    criteria?,
+    skip?: number,
+    limit?: number,
+    pagination?: boolean,
+    sort?: string,
+    toPopulate?: string[],
+    selectedFields?,
+    user?
+  ): Promise<IPaginatedResult | IErrorInfo> {
     // generating initial criteria
     skip = skip || 0;
     limit = limit || 50;
@@ -34,39 +67,47 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       //TODO : find a better way to get pagination
       numberOfEntities = await this.model.find(criteria).count();
     }
-
     const query = this.model
       .find(criteria, undefined, {
         skip,
         limit
-      }).collation({ locale: 'en', caseFirst: 'lower' })
+      })
+      .collation({ locale: 'en', caseFirst: 'lower' })
       .sort(sortObj);
+
     while (toPopulate && toPopulate.length) {
       const x = toPopulate.pop();
       if (x) {
         query.populate(x);
       }
     }
+
     if (sortObj) {
       query.sort(sortObj);
     }
+
+    if (Array.isArray(selectedFields)) {
+      query.select(selectedFields.join(' '));
+    }
+
     const entities = await query;
+
     return pagination
       ? {
-        skip,
-        limit,
-        page_number: Math.floor(skip / limit) + 1,
-        total_record_count: numberOfEntities,
-        results: entities
-      }
+          skip,
+          limit,
+          page_number: Math.floor(skip / limit) + 1,
+          total_record_count: numberOfEntities,
+          results: entities
+        }
       : { results: entities };
   }
 
-  async getById(id: string) {
+  async getById(id: string, user?) {
     logger.msg(`Getting ${this.modelName} with id ${id}.`);
     return await this.model.findById(id);
   }
-  async update(id: string, data: Doc) {
+  async update(id: string, data: Doc, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Updating ${this.modelName} with id ${id}.`);
     const outdatedModel = await this.getById(id);
     const mergedModel = Object.assign(outdatedModel, data);
@@ -77,7 +118,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     return updatedModel;
   }
 
-  async delete(id: string) {
+  async delete(id: string, user?) {
     logger.msg('Deleting member with id: ' + id);
 
     const member = await this.getById(id);
