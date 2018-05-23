@@ -14,7 +14,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     return await newMember.save();
   }
 
-  async getAll(criteria?, skip: number = 0, limit: number = 50, pagination?: boolean, sort?: string, toPopulate?: string[]) {
+  async getAll(criteria?, skip: number = 0, limit: number = 50, pagination: boolean = true, sort?: string, toPopulate?: string[]) {
     // generating initial criteria
     criteria = { ...criteria, deleted: false };
     const sortObj = {};
