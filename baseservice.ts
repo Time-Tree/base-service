@@ -16,6 +16,8 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
   async getAll(criteria?, skip: number = 0, limit: number = 50, pagination: boolean = true, sort?: string, toPopulate?: string[]) {
     // generating initial criteria
+    skip = skip || 0;
+    limit = limit || 50;
     criteria = { ...criteria, deleted: false };
     const sortObj = {};
     if (sort) {
@@ -38,6 +40,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
         skip,
         limit
       })
+      .collation({ locale: 'en', caseFirst: 'lower' })
       .sort(sortObj);
     while (toPopulate && toPopulate.length) {
       const x = toPopulate.pop();
@@ -51,8 +54,9 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     const entities = await query;
     return pagination
       ? {
+          skip,
+          limit,
           page_number: Math.floor(skip / limit) + 1,
-          page_size: limit,
           total_record_count: numberOfEntities,
           results: entities
         }
