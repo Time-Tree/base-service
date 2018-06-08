@@ -42,7 +42,6 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   }
 
   async create(data, user?): Promise<Doc | IErrorInfo> {
-    console.warn(data);
     data.createdOn = new Date().getTime();
     const newMember = new this.model(data);
     return await newMember.save();
@@ -69,10 +68,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     toPopulate?: string[],
     selectedFields?
   ): Promise<IPaginatedResult | IErrorInfo> {
-    console.log(criteria);
-    console.log(toPopulate);
     if (isServiceParams(criteria)) {
-      console.log('is service params');
       criteria.skip = criteria.skip || 0;
       criteria.limit = criteria.limit || 50;
       criteria.criteria = { ...criteria.criteria, deleted: false };
@@ -101,7 +97,6 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       if (Array.isArray(skipOrToPopulate)) {
         while (skipOrToPopulate && skipOrToPopulate.length) {
           const x = skipOrToPopulate.pop();
-          console.log(x);
           if (x) {
             query.populate(x);
           }
