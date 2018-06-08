@@ -21,12 +21,14 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
     this.create = this.routeHandler(service.create, req => [req.body, req.user]);
     this.readone = this.routeHandler(service.getById, req => [req.params.id, req.user]);
     this.readall = this.routeHandler(service.getAll, req => [
-      req.query.criteria ? JSON.parse(req.query.criteria) : null,
-      parseInt(req.query.skip),
-      parseInt(req.query.limit),
-      (req.query.pagination || 'true') === 'true',
-      req.query.sort || null,
-      req.user
+      {
+        criteria: req.query.criteria ? JSON.parse(req.query.criteria) : null,
+        skip: parseInt(req.query.skip, 10),
+        limit: parseInt(req.query.limit, 10),
+        pagination: (req.query.pagination || 'true') === 'true',
+        sort: req.query.sort || null,
+        user: req.user
+      }
     ]);
     this.update = this.routeHandler(service.update, req => [req.params.id, req.body, req.user]);
     this.del = this.routeHandler(service.delete, req => [req.params.id, req.user]);
