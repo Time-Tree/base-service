@@ -1,5 +1,4 @@
 import { Model, Document } from 'mongoose';
-import { ObjectID } from 'mongodb';
 
 import errorHandler from './utils/errorHandler';
 import logger from './utils/logger';
@@ -191,12 +190,12 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   }
   async update(id: string, data: Doc, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Updating ${this.modelName} with id ${id}.`);
-    const outdatedModel = await this.getById(id);
+    const outdatedModel = await this.model.findById(id);
     const mergedModel = Object.assign(outdatedModel, data);
     const result = await this.model.update({ _id: id }, mergedModel, {
       upsert: true
     });
-    const updatedModel = await this.getById(id);
+    const updatedModel = await this.model.findById(id);
     return updatedModel;
   }
 
