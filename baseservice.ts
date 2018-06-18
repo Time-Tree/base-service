@@ -202,7 +202,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   async delete(id: string, user?) {
     logger.msg('Deleting member with id: ' + id);
 
-    const member = await this.getById(id);
+    const member = await this.model.findById(id);
     if (member) {
       await this.model.update({ _id: id }, { deleted: true }, { upsert: true });
       return member;
