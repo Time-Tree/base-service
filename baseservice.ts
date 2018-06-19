@@ -114,12 +114,12 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
       return criteria.pagination
         ? {
-            skip: criteria.skip,
-            limit: criteria.limit,
-            page_number: Math.floor(criteria.skip / criteria.limit) + 1,
-            total_record_count: numberOfEntities,
-            results: entities
-          }
+          skip: criteria.skip,
+          limit: criteria.limit,
+          page_number: Math.floor(criteria.skip / criteria.limit) + 1,
+          total_record_count: numberOfEntities,
+          results: entities
+        }
         : { results: entities };
     } else {
       if (typeof skipOrToPopulate === 'number' && typeof limitOrSelectedFields === 'number') {
@@ -168,29 +168,32 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
         return pagination
           ? {
-              skip: skipOrToPopulate,
-              limit: limitOrSelectedFields,
-              page_number: Math.floor(skipOrToPopulate / limitOrSelectedFields) + 1,
-              total_record_count: numberOfEntities,
-              results: entities
-            }
+            skip: skipOrToPopulate,
+            limit: limitOrSelectedFields,
+            page_number: Math.floor(skipOrToPopulate / limitOrSelectedFields) + 1,
+            total_record_count: numberOfEntities,
+            results: entities
+          }
           : { results: entities };
       } else {
-        return {
+        return Promise.reject({
           code: 'TYPE_ERROR',
           message: 'Types not accepted'
-        };
+        });
       }
     }
   }
 
   async getById(id: string, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Getting ${this.modelName} with id ${id}.`);
-    return await this.model.findById(id);
+    const model = await this.model.findById(id);
+    if (!model || model.deleted === true) return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` });
+    return model;
   }
+
   async update(id: string, data: Doc, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Updating ${this.modelName} with id ${id}.`);
-    const outdatedModel = await this.model.findById(id);
+    const outdatedModel = await this.getById(id);
     const mergedModel = Object.assign(outdatedModel, data);
     const result = await this.model.update({ _id: id }, mergedModel, {
       upsert: true
@@ -200,14 +203,14 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   }
 
   async delete(id: string, user?) {
-    logger.msg('Deleting member with id: ' + id);
+    logger.msg(`Deleting ${this.modelName} with id ${id}`);
 
     const member = await this.model.findById(id);
     if (member) {
       await this.model.update({ _id: id }, { deleted: true }, { upsert: true });
       return member;
     } else {
-      throw { code: 'NOT_FOUND', message: 'Member not found' };
+      return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} not found` });
     }
   }
 }
