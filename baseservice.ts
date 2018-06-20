@@ -187,13 +187,14 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
   async getById(id: string, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Getting ${this.modelName} with id ${id}.`);
     const model = await this.model.findOne({ _id: id, deleted: false });
-    if (!model) return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` });
+    if (!model) return { code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` };
     return model;
   }
 
   async update(id: string, data: Doc, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Updating ${this.modelName} with id ${id}.`);
     const outdatedModel = await this.getById(id);
+    if (isError(outdatedModel)) return Promise.reject(outdatedModel);
     const mergedModel = Object.assign(outdatedModel, data);
     const result = await this.model.update({ _id: id }, mergedModel, {
       upsert: true
