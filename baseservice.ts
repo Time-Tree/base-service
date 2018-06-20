@@ -186,8 +186,8 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
   async getById(id: string, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Getting ${this.modelName} with id ${id}.`);
-    const model = await this.model.findById(id);
-    if (!model || model.deleted === true) return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` });
+    const model = await this.model.findOne({ _id: id, deleted: false });
+    if (!model) return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` });
     return model;
   }
 
