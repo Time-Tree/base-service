@@ -143,8 +143,8 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
         }
         const query = this.model
           .find(criteria, undefined, {
-            skipOrToPopulate,
-            limitOrSelectedFields
+            skip: skipOrToPopulate,
+            limit: limitOrSelectedFields
           })
           .collation({ locale: 'en', caseFirst: 'lower' })
           .sort(sortObj);
