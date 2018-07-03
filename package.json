@@ -3,7 +3,7 @@
   "author": {
     "name": "Time Tree"
   },
-  "version": "1.0.22",
+  "version": "1.0.23",
   "dependencies": {
     "express": "^4.16.3",
     "mongoose": "^5.1.5"
