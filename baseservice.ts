@@ -98,7 +98,6 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
           .collation({ locale: 'en', caseFirst: 'lower' })
           .sort(sortObj);
       }
-      console.log(query);
       if (Array.isArray(skipOrToPopulate)) {
         while (skipOrToPopulate && skipOrToPopulate.length) {
           const x = skipOrToPopulate.pop();
