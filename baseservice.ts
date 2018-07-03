@@ -80,19 +80,25 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       }
 
       let numberOfEntities = 0;
-
+      let query;
       if (criteria.pagination) {
         logger.msg(`Getting all ${this.modelName}.`);
         //TODO : find a better way to get pagination
         numberOfEntities = await this.model.find(criteria.criteria).count();
+        query = this.model
+          .find(criteria.criteria, undefined, {
+            skip: criteria.skip,
+            limit: criteria.limit
+          })
+          .collation({ locale: 'en', caseFirst: 'lower' })
+          .sort(sortObj);
+      } else {
+        query = this.model
+          .find(criteria.criteria, undefined)
+          .collation({ locale: 'en', caseFirst: 'lower' })
+          .sort(sortObj);
       }
-      const query = this.model
-        .find(criteria.criteria, undefined, {
-          skip: criteria.skip,
-          limit: criteria.limit
-        })
-        .collation({ locale: 'en', caseFirst: 'lower' })
-        .sort(sortObj);
+      console.log(query);
       if (Array.isArray(skipOrToPopulate)) {
         while (skipOrToPopulate && skipOrToPopulate.length) {
           const x = skipOrToPopulate.pop();
