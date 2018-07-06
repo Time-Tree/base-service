@@ -198,7 +198,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
   async update(id: string, data: Doc, user?): Promise<Doc | IErrorInfo> {
     logger.msg(`Updating ${this.modelName} with id ${id}.`);
-    const outdatedModel = await this.getById(id);
+    const outdatedModel = await this.model.findById(id);
     if (isError(outdatedModel)) return Promise.reject(outdatedModel);
     const mergedModel = Object.assign(outdatedModel, data);
     const result = await this.model.update({ _id: id }, mergedModel, {
