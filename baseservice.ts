@@ -70,7 +70,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     if (isServiceParams(criteria)) {
       criteria.skip = criteria.skip || 0;
       criteria.limit = criteria.limit || 50;
-      criteria.criteria = { ...criteria.criteria, deleted: { $exists: true, $ne: true } };
+      criteria.criteria = { ...criteria.criteria, deleted: { $ne: true } };
       const sortObj = {};
       if (criteria.sort) {
         const partsOfSort = criteria.sort.split(',');
