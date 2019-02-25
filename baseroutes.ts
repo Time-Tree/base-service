@@ -45,7 +45,7 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
 
   protected routeHandler(serviceMethod, parser?: (req, res?) => any[]) {
     return async (req, res) => {
-      logger.msg(`Route ${req.url}.`);
+      logger.route(`${req.url}.`, { method: req.method, params: req.params, query: req.query, body: req.body });
       try {
         let args: any[] = [];
         if (parser) {

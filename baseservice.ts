@@ -124,12 +124,12 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
         return criteria.pagination
           ? {
-              skip: criteria.skip,
-              limit: criteria.limit,
-              page_number: Math.floor(criteria.skip / criteria.limit) + 1,
-              total_record_count: numberOfEntities,
-              results: entities
-            }
+            skip: criteria.skip,
+            limit: criteria.limit,
+            page_number: Math.floor(criteria.skip / criteria.limit) + 1,
+            total_record_count: numberOfEntities,
+            results: entities
+          }
           : { results: entities };
       } else {
         if (typeof skipOrToPopulate === 'number' && typeof limitOrSelectedFields === 'number') {
@@ -158,7 +158,6 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
             })
             .collation({ locale: 'en', caseFirst: 'lower' })
             .sort(sortObj);
-
           while (toPopulate && toPopulate.length) {
             const x = toPopulate.pop();
             if (x) {
@@ -178,12 +177,12 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
 
           return pagination
             ? {
-                skip: skipOrToPopulate,
-                limit: limitOrSelectedFields,
-                page_number: Math.floor(skipOrToPopulate / limitOrSelectedFields) + 1,
-                total_record_count: numberOfEntities,
-                results: entities
-              }
+              skip: skipOrToPopulate,
+              limit: limitOrSelectedFields,
+              page_number: Math.floor(skipOrToPopulate / limitOrSelectedFields) + 1,
+              total_record_count: numberOfEntities,
+              results: entities
+            }
             : { results: entities };
         } else {
           return Promise.reject({
@@ -212,7 +211,6 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     try {
       logger.msg(`Updating ${this.modelName} with id ${id}.`);
       const outdatedModel = await this.getById(id, user);
-      console.log(outdatedModel);
       if (isError(outdatedModel)) return Promise.reject(outdatedModel);
       const mergedModel = Object.assign(outdatedModel, data);
       const result = await this.model.update({ _id: id }, mergedModel, {
