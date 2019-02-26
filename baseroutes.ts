@@ -45,7 +45,11 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
 
   protected routeHandler(serviceMethod, parser?: (req, res?) => any[]) {
     return async (req, res) => {
-      logger.route(`${req.url}.`, { method: req.method, params: req.params, query: req.query, body: req.body });
+      let body = {};
+      if (!this.testRoute(req.url)) {
+        body = req.body;
+      }
+      logger.route(`${req.url}.`, { method: req.method, params: req.params, query: req.query, body });
       try {
         let args: any[] = [];
         if (parser) {
@@ -57,5 +61,10 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
         res.status(500).send(errorHandler(error));
       }
     };
+  }
+
+  testRoute(route: string) {
+    const regex = new RegExp('register|login|change-pass|forgot-pass|reset-pass|set-password');
+    return regex.test(route);
   }
 }
