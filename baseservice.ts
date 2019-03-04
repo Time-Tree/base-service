@@ -200,7 +200,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
     try {
       logger.msg(`Getting ${this.modelName} with id ${id}.`);
       const model = await this.model.findOne({ _id: id, deleted: { $ne: true } });
-      if (!model) return Promise.reject({ code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` });
+      if (!model) return { code: 'NOT_FOUND', message: `${this.modelName} with id ${id} not found` };
       return model;
     } catch (error) {
       return Promise.reject(error);
