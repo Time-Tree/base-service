@@ -213,9 +213,7 @@ export default abstract class Service<Doc extends Document, DocModel extends Mod
       const outdatedModel = await this.getById(id, user);
       if (isError(outdatedModel)) return Promise.reject(outdatedModel);
       const mergedModel = Object.assign(outdatedModel, data);
-      const result = await this.model.update({ _id: id }, mergedModel, {
-        upsert: true
-      });
+      await this.model.update({ _id: id }, mergedModel);
       const updatedModel = await this.getById(id, user);
       return updatedModel;
     } catch (error) {

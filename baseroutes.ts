@@ -1,4 +1,3 @@
-import * as express from 'express';
 import { Router } from 'express';
 import { Document, Model } from 'mongoose';
 import logger from './utils/logger';
