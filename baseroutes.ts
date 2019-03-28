@@ -63,7 +63,7 @@ export default class BaseRoutes<T extends Service<Document, Model<Document>>> {
   }
 
   testRoute(route: string) {
-    const regex = new RegExp('register|login|change-pass|forgot-pass|reset-pass|set-password');
+    const regex = new RegExp('register|login|change-pass|forgot-pass|reset-pass|set-password|facebook');
     return regex.test(route);
   }
 }
